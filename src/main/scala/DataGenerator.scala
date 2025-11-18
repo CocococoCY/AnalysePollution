@@ -17,7 +17,7 @@ object DataGenerator {
     val cities = Seq("Paris", "Lyon", "Marseille", "Nice", "Toulouse")
     val lines = Seq("Ligne A", "Ligne B", "Ligne C", "Metro 1", "Metro 2")
 
-    val nbRows = 100000       // ⬅️ Tu peux mettre 300000 si tu veux du vrai BIG DATA
+    val nbRows = 100000
 
     val df = spark.range(nbRows)
       .map { id =>
