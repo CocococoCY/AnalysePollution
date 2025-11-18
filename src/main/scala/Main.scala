@@ -40,14 +40,14 @@ object Main {
     // ----------------------------------------------------------------------
     val dfRaw = Loader.readCSV(spark, "data/pollution_big.csv")
 
-    println(s" Nombre de lignes brutes : ${dfRaw.count()}")
+    println(s"📌 Nombre de lignes brutes : ${dfRaw.count()}")
 
     // ----------------------------------------------------------------------
     // 2. Nettoyage — suppression des doublons + valeurs manquantes
     // ----------------------------------------------------------------------
     val dfClean = Cleaner.clean(dfRaw)
 
-    println(s" Nombre de lignes après nettoyage : ${dfClean.count()}")
+    println(s"📌 Nombre de lignes après nettoyage : ${dfClean.count()}")
 
     // Preview
     dfClean.show(5, truncate = false)
@@ -69,14 +69,14 @@ object Main {
       (row.getAs[String]("station_name"), index)
     }
 
-    println("\n Exemple map() — Indice pollution :")
+    println("\n📌 Exemple map() — Indice pollution :")
     pollutionIndexRDD.take(5).foreach(println)
 
 
     // ----- filter : stations très polluées -----
     val highPollutionRDD = rdd.filter(row => row.getAs[Int]("pm25") > 70)
 
-    println("\n Exemple filter() — PM2.5 > 70 :")
+    println("\n📌 Exemple filter() — PM2.5 > 70 :")
     highPollutionRDD.take(5).foreach(println)
 
 
@@ -85,7 +85,7 @@ object Main {
       row.getAs[String]("station_name").split("-")
     }
 
-    println("\n Exemple flatMap() — Mots dans station_name :")
+    println("\n📌 Exemple flatMap() — Mots dans station_name :")
     flatNamesRDD.take(10).foreach(println)
 
 
@@ -102,7 +102,7 @@ object Main {
         min("pm25").alias("pm25_min")
       )
 
-    println("\n Statistiques par station :")
+    println("\n📌 Statistiques par station :")
     statsByStation.show(10, truncate = false)
 
 
@@ -115,7 +115,7 @@ object Main {
         min("co2").alias("co2_min")
       )
 
-    println("\n Statistiques par ligne :")
+    println("\n📌 Statistiques par ligne :")
     statsByLine.show(10, truncate = false)
 
 
@@ -130,7 +130,7 @@ object Main {
       .withColumn("day_extracted", dayofmonth(col("datetime")))
       .withColumn("hour_extracted", hour(col("datetime")))
 
-    println("\n Extraction temporelle :")
+    println("\n📌 Extraction temporelle :")
     dfTime.select("timestamp", "datetime", "year", "month_extracted", "day_extracted", "hour_extracted")
       .show(10, truncate = false)
 
