@@ -38,27 +38,29 @@ object Main {
     // ----------------------------------------------------------------------
     // 1. Lecture du dataset brut (CSV généré par DataGenerator)
     // ----------------------------------------------------------------------
-    val dfRaw = Loader.readCSV(spark, "data/pollution_big.csv")
+    val dfRaw =
+      Loader.readCSV(spark, "data/pollution_big.csv")
 
-    println(s"Nombre de lignes brutes : ${dfRaw.count()}")
+    println(s" Nombre de lignes brutes : ${dfRaw.count()}")
 
     // ----------------------------------------------------------------------
     // 2. Nettoyage — suppression des doublons + valeurs manquantes
     // ----------------------------------------------------------------------
     val dfClean = Cleaner.clean(dfRaw)
 
-    println(s"Nombre de lignes après nettoyage : ${dfClean.count()}")
+    println(s" Nombre de lignes après nettoyage : ${dfClean.count()}")
 
     // Preview
     dfClean.show(5, truncate = false)
 
+    GraphAnalysis.buildAndAnalyzeGraph(dfClean)(spark)
 
     // ----------------------------------------------------------------------
     // 3. PARTIE RDD — map, filter, flatMap (programmation fonctionnelle)
     // ----------------------------------------------------------------------
     val rdd = dfClean.rdd
 
-    // ----- map : création d'un indice de pollution -----
+    // ----- map : exemple de création d'un indice de pollution -----
     val pollutionIndexRDD = rdd.map { row =>
       val pm25 = row.getAs[Int]("pm25")
       val pm10 = row.getAs[Int]("pm10")
@@ -69,14 +71,14 @@ object Main {
       (row.getAs[String]("station_name"), index)
     }
 
-    println("\nExemple map() — Indice pollution :")
+    println("\n Exemple map() — Indice pollution :")
     pollutionIndexRDD.take(5).foreach(println)
 
 
     // ----- filter : stations très polluées -----
     val highPollutionRDD = rdd.filter(row => row.getAs[Int]("pm25") > 70)
 
-    println("\nExemple filter() — PM2.5 > 70 :")
+    println("\n Exemple filter() — PM2.5 > 70 :")
     highPollutionRDD.take(5).foreach(println)
 
 
@@ -85,7 +87,7 @@ object Main {
       row.getAs[String]("station_name").split("-")
     }
 
-    println("\nExemple flatMap() — Mots dans station_name :")
+    println("\n Exemple flatMap() — Mots dans station_name :")
     flatNamesRDD.take(10).foreach(println)
 
 
@@ -102,7 +104,7 @@ object Main {
         min("pm25").alias("pm25_min")
       )
 
-    println("\nStatistiques par station :")
+    println("\n Statistiques par station :")
     statsByStation.show(10, truncate = false)
 
 
@@ -130,7 +132,7 @@ object Main {
       .withColumn("day_extracted", dayofmonth(col("datetime")))
       .withColumn("hour_extracted", hour(col("datetime")))
 
-    println("\nExtraction temporelle :")
+    println("\n Extraction temporelle :")
     dfTime.select("timestamp", "datetime", "year", "month_extracted", "day_extracted", "hour_extracted")
       .show(10, truncate = false)
 
@@ -139,3 +141,4 @@ object Main {
     spark.stop()
   }
 }
+
